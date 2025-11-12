@@ -1,0 +1,40 @@
+# Скомпилированные файлы
+*.o
+*.a
+*.so
+*.dll
+*.exe
+
+# Выходные файлы
+build/
+dist/
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Логи
+*.log
+server.log
+
+# Сохранённые данные
+world/*.dat
+world/session.lock
+
+# Профилирование
+gmon.out
+*.prof
+
+# Временные файлы
+tmp/
+temp/
+*.tmp
+
+# ОС
+Thumbs.db
+.directory
