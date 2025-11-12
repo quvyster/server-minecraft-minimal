@@ -14,9 +14,25 @@ cd server-minecraft-minimal
 
 ### 2️⃣ Устанавливаем зависимости
 
-**Windows (MSYS2):**
-```powershell
+**Windows (выберите один вариант):**
+
+*Вариант 1: MSYS2 (рекомендуется)*
+1. Установите [MSYS2](https://www.msys2.org/)
+2. Откройте **MSYS2 MinGW 64-bit** (НЕ PowerShell!)
+3. Выполните:
+```bash
 pacman -Sy mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+```
+
+*Вариант 2: Visual Studio Build Tools*
+1. Установите [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/)
+2. Выберите "Desktop development with C++"
+3. Откройте "Developer Command Prompt"
+4. Используйте `nmake` вместо `make`
+
+*Вариант 3: Git Bash*
+```powershell
+choco install mingw-w64  # или установите через winget
 ```
 
 **Linux (Ubuntu/Debian):**
@@ -181,10 +197,29 @@ make clean && make      # Полная пересборка
 
 | Ошибка | Решение |
 |--------|--------|
-| `gcc: command not found` | Установите GCC (см. шаг 2) |
-| `Permission denied` | `chmod +x build/server` |
+| `gcc: command not found` | Убедитесь, что вы находитесь в **MSYS2 MinGW 64-bit** (не PowerShell!) или переустановите GCC |
+| `make: command not found` | Установите `mingw-w64-x86_64-make` в MSYS2 с помощью `pacman` |
+| `Permission denied` | `chmod +x build/server` (Linux/macOS) |
 | `Address already in use` | Измените PORT в `globals.h` |
 | Сервер падает | Запустите с `make debug-run` |
+
+### Специфичные для Windows
+
+**Проблема**: `bash: make: command not found` даже после установки
+```bash
+# Решение: Убедитесь, что вы используете MSYS2 MinGW 64-bit
+# Откройте C:\msys64\msys2_shell.cmd -mingw64
+
+# Или установите через Chocolatey/Scoop:
+choco install mingw-w64
+```
+
+**Проблема**: Сборка падает с ошибками линкера
+```bash
+# Решение: Обновите пакеты
+pacman -Syu
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-make
+```
 
 ---
 
