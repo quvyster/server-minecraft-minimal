@@ -8,10 +8,34 @@ CFLAGS = -Wall -Wextra -O3 -march=native -flto \
          -DNDEBUG \
          -I./include
 
-LDFLAGS = -lm -lpthread \
-          -Wl,-O3 \
-          -Wl,--sort-common \
-          -Wl,--as-needed
+LDFLAGS = -lm -lpthread
+
+# Платформенные флаги
+ifeq ($(OS),Windows_NT)
+    LDFLAGS += -lws2_32
+else
+    LDFLAGS += -Wl,-O3 \
+               -Wl,--sort-common \
+               -Wl,--as-needed
+endif
+
+# Опции для портативной (статической) сборки
+PORTABLE_CFLAGS = $(CFLAGS) -static -static-libgcc -static-libstdc++
+# При статической линковке явно добавляем winpthread статически, затем возвращаемся к динамическому режиму
+PORTABLE_LDFLAGS = -static -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic -lws2_32 -lm
+
+# Цель для сборки переносимого exe (попытка статической линковки).
+# ВАЖНО: статическая линковка может увеличить размер бинарника и потребовать
+# наличия статических библиотек (libwinpthread.a, libgcc.a, libstdc++-6.a) в
+# MSYS2. Если сборка не пройдёт, используйте копирование DLL в папку build/.
+portable: clean
+	@echo "[PORTABLE] Пытаемся собрать статически (может не сработать)..."
+	@mkdir -p build
+	@echo "[LD] Линковка build/server-portable.exe..."
+	@$(CC) $(SOURCES) $(PORTABLE_CFLAGS) $(PORTABLE_LDFLAGS) -I./include -o build/server-portable.exe || (echo "[PORTABLE] Статическая сборка не удалась" && exit 1)
+	@echo "[OK] Портативный сервер создан: build/server-portable.exe"
+	@echo "Размер: $$(du -h build/server-portable.exe | cut -f1)"
+
 
 # Источники
 SOURCES = src/main.c \
